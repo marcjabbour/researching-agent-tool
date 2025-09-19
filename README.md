@@ -239,3 +239,13 @@ researching-agent-tool/
 │   │   └── lib/                  # Utilities and types
 │   └── package.json              # Frontend dependencies
 ```
+
+## 🔮 Future Work: RAG Integration
+
+Given more time, I would extend the system with Retrieval-Augmented Generation (RAG). This would allow users to upload documents (e.g., PDFs, pitch decks, filings) when a company’s online presence is limited.
+	•	Ingestion: Parse, chunk, and embed user documents into a vector store (e.g., pgvector, Qdrant).
+	•	Retrieval: Hybrid search (dense + keyword) with citations surfaced in the UI.
+	•	LangGraph Fit: Add DocumentIngestionNode and RAGRetrieverNode before the Response Formatter, ensuring uploaded evidence is merged with web results.
+	•	UX: Drag-and-drop upload, per-chunk citations, and a dashboard for managing indexed docs.
+
+This would seamlessly ground research in private material while keeping the same transparent, citation-first workflow.
