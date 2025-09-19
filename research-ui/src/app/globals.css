@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --border: 214.3 31.8% 91.4%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+}
+
+body {
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Custom prose styling for markdown content */
+.prose-green {
+  --tw-prose-body: rgb(34 197 94);
+  --tw-prose-headings: rgb(21 128 61);
+  --tw-prose-bold: rgb(21 128 61);
+  --tw-prose-links: rgb(34 197 94);
+  --tw-prose-code: rgb(21 128 61);
+  --tw-prose-quotes: rgb(34 197 94);
+}
+
+.prose-green h1, .prose-green h2, .prose-green h3, .prose-green h4, .prose-green h5, .prose-green h6 {
+  color: rgb(21 128 61);
+  font-weight: 600;
+}
+
+.prose-green p {
+  color: rgb(22 163 74);
+  line-height: 1.7;
+}
+
+.prose-green ul, .prose-green ol {
+  color: rgb(22 163 74);
+}
+
+.prose-green strong {
+  color: rgb(21 128 61);
+  font-weight: 600;
+}
+
+.prose-green code {
+  background-color: rgb(240 253 244);
+  color: rgb(21 128 61);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.prose-green blockquote {
+  border-left: 4px solid rgb(134 239 172);
+  background-color: rgb(240 253 244);
+  color: rgb(22 163 74);
+  padding: 0.5rem 1rem;
+  font-style: italic;
+}

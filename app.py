@@ -168,9 +168,9 @@ if __name__ == "__main__":
     # fact_result = run_query(fact_query)
     # print(f"Fact Response: {fact_result['final_response']}")
 
-    print("\n=== TESTING FACT QUERY ===")
-    fact_query = "Create a profile for Perplexity AI"
-    fact_result = run_query(fact_query)
-    print(f"Fact Response: {fact_result['final_response']}")
+    print("\n=== TESTING QUERY ===")
+    query = "Create a profile for Perplexity AI"
+    result = run_query(query)
+    print(f"Response: {result['final_response']}")
 
     # display_research_results(fact_result)
