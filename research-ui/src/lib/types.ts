@@ -47,6 +47,7 @@ export interface WebSocketMessage {
 }
 
 export interface ResearchData {
+  intent?: string;
   plan?: ResearchPlan;
   progress?: ResearchProgress;
   execution_log?: ReasoningStep[];

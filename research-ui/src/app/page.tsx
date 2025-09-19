@@ -7,6 +7,7 @@ import { TaskBreakdown } from '../components/research/TaskBreakdown';
 import { ProgressDisplay } from '../components/research/ProgressDisplay';
 import { ExecutionLog } from '../components/research/ExecutionLog';
 import { ResultsDisplay } from '../components/research/ResultsDisplay';
+import { Button } from '../components/ui/Button';
 import { ResearchData } from '../lib/types';
 import { ResearchAPIClient } from '../lib/api';
 import { WebSocketManager } from '../lib/websocket';
@@ -42,6 +43,7 @@ export default function HomePage() {
       ws.onMessage = (data) => {
         // Merge new data with existing data to maintain progressive rendering
         setResearchData(prevData => ({
+          intent: data.intent || prevData?.intent,
           plan: data.plan || prevData?.plan,
           progress: data.progress || prevData?.progress,
           execution_log: data.execution_log || prevData?.execution_log,
@@ -73,13 +75,23 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Research Agent
-            </h1>
-            <p className="text-gray-600">
-              AI-powered research with transparent execution
-            </p>
+          <div className="flex justify-between items-center mb-8">
+            <div className="text-center flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Research Agent
+              </h1>
+              <p className="text-gray-600">
+                AI-powered research with transparent execution
+              </p>
+            </div>
+            <Button
+              onClick={() => window.location.href = '/dashboard'}
+              variant="outline"
+              size="sm"
+              className="ml-4"
+            >
+              View History
+            </Button>
           </div>
 
           {/* Query Input */}
@@ -114,8 +126,8 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* Two Column Layout for Progress and Execution */}
-              {(researchData?.progress || researchData?.execution_log) && (
+              {/* Two Column Layout for Progress and Execution - Hidden for fact queries */}
+              {researchData?.intent !== 'fact' && (researchData?.progress || researchData?.execution_log) && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fadeIn">
                   {/* Left Column */}
                   <div className="space-y-6">

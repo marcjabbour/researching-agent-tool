@@ -86,6 +86,7 @@ export class WebSocketManager {
   private transformData(data: any): ResearchData {
     if (!data) {
       return {
+        intent: undefined,
         plan: undefined,
         progress: undefined,
         execution_log: undefined,
@@ -95,6 +96,7 @@ export class WebSocketManager {
     }
 
     return {
+      intent: data.intent || undefined,
       plan: data.research_plan || undefined,
       progress: data.research_progress ? {
         current_stage: data.research_progress.current_stage || '',
