@@ -80,12 +80,25 @@ The system follows a modular, node-based architecture using LangGraph for workfl
    cd researching-agent-tool
    ```
 
-2. **Install Python dependencies**:
+2. **Set up a virtual environment** (recommended):
+   ```bash
+   # Create virtual environment
+   python3 -m venv venv
+
+   # Activate virtual environment
+   source venv/bin/activate
+
+   # You should see (venv) in your terminal prompt
+   ```
+
+   > **Why use a virtual environment?** It isolates your project dependencies from your system Python, preventing version conflicts and ensuring consistent installations across different machines.
+
+3. **Install Python dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Set up environment variables**:
+4. **Set up environment variables**:
    ```bash
    cp .env.example .env
    ```
@@ -96,13 +109,18 @@ The system follows a modular, node-based architecture using LangGraph for workfl
    TAVILY_API_KEY=your_tavily_api_key_here
    ```
 
-4. **Run the backend server**:
+5. **Run the backend server**:
    ```bash
+   # Make sure your virtual environment is activated
+   source venv/bin/activate  # If not already activated
+
    cd api
    python main.py
    ```
-   
+
    The API will be available at `http://localhost:8000`
+
+   > **Note:** Remember to activate your virtual environment (`source venv/bin/activate`) each time you open a new terminal session to work on this project.
 
 ### Frontend Setup
 
