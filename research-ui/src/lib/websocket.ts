@@ -1,4 +1,5 @@
 import { WebSocketMessage, ResearchData } from './types';
+import { buildWsUrl } from './config';
 
 export class WebSocketManager {
   private ws: WebSocket | null = null;
@@ -10,7 +11,7 @@ export class WebSocketManager {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.ws = new WebSocket(`ws://localhost:8000/ws/research/${this.sessionId}`);
+        this.ws = new WebSocket(buildWsUrl(`/ws/research/${this.sessionId}`));
 
         this.ws.onopen = () => {
           console.log('WebSocket connected');

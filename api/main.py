@@ -17,12 +17,31 @@ from app import run_query
 from research_transparency.types import AppState
 from api.database import ResearchDatabase, ResearchSessionRecord
 
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
+# Configuration from environment variables
+API_HOST = os.getenv("API_HOST", "0.0.0.0")
+API_PORT = int(os.getenv("API_PORT", "8000"))
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+
+# Parse allowed origins (support multiple URLs separated by commas)
+allowed_origins = [url.strip() for url in FRONTEND_URL.split(",")]
+# Add localhost variations for development
+allowed_origins.extend([
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    f"http://localhost:{os.getenv('FRONTEND_PORT', '3000')}",
+    f"http://127.0.0.1:{os.getenv('FRONTEND_PORT', '3000')}"
+])
+
 app = FastAPI(title="Research Agent API", version="1.0.0")
 
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -431,4 +450,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=API_HOST, port=API_PORT)

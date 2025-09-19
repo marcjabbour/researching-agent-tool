@@ -1,6 +1,5 @@
 import { ResearchSession } from './types';
-
-const API_BASE_URL = 'http://localhost:8000';
+import { buildApiUrl } from './config';
 
 export interface StartResearchRequest {
   query: string;
@@ -9,7 +8,7 @@ export interface StartResearchRequest {
 
 export class ResearchAPIClient {
   static async startResearch(query: string, depth: string = 'standard'): Promise<ResearchSession> {
-    const response = await fetch(`${API_BASE_URL}/api/research`, {
+    const response = await fetch(buildApiUrl('/api/research'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,7 +29,7 @@ export class ResearchAPIClient {
   }
 
   static async getResearchStatus(sessionId: string) {
-    const response = await fetch(`${API_BASE_URL}/api/research/${sessionId}`);
+    const response = await fetch(buildApiUrl(`/api/research/${sessionId}`));
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.statusText}`);
