@@ -83,7 +83,6 @@ The system follows a modular, node-based architecture using LangGraph for workfl
 2. **Install Python dependencies**:
    ```bash
    pip install -r requirements.txt
-   pip install -r api/requirements.txt
    ```
 
 3. **Set up environment variables**:
