@@ -91,7 +91,6 @@ The system follows a modular, node-based architecture using LangGraph for workfl
    # You should see (venv) in your terminal prompt
    ```
 
-   > **Why use a virtual environment?** It isolates your project dependencies from your system Python, preventing version conflicts and ensuring consistent installations across different machines.
 
 3. **Install Python dependencies**:
    ```bash
