@@ -2,17 +2,18 @@ import os
 from typing import TypedDict, Dict, Any, List
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from tools.research_transparency.types import AppState
-from tools.research_transparency.state_manager import ResearchStateManager
+from research_transparency.types import AppState
+from research_transparency.state_manager import ResearchStateManager
+from tools.response_formatter.helpers import generate_prompt_for_memo, generate_prompt_for_profile, generate_prompt_for_compare, generate_prompt_for_default
 
 def response_formatter_node(state: AppState) -> AppState:
     """
-    Simplified Response Formatter Node - Extracts claims and sources from research bundle,
+    Simplified Response Formatter Node - Extracts claims and sources from task results,
     then uses LLM to generate the final response based on intent.
     """
     intent = state["intent"]
     depth = state.get("extras", {}).get("depth", "standard")
-    research_bundle = state.get("research_bundle")
+    intermediate_results = state.get("intermediate_results", {})
     query = state["query"]
 
     # Log start of response formatting
@@ -29,17 +30,17 @@ def response_formatter_node(state: AppState) -> AppState:
             state, "finalizing",
             f"Using pre-generated {intent} response from quick search"
         )
-    elif not research_bundle:
+    elif not intermediate_results:
         # Handle missing research data
         final_response = "No research data available to format response."
 
         state = ResearchStateManager.log_reasoning_step(
             state, "finalizing",
-            "No research bundle found, providing error response."
+            "No task results found, providing error response."
         )
     else:
-        # Extract claims and sources from research bundle
-        claims_and_sources = _extract_claims_and_sources(research_bundle)
+        # Extract claims and sources from task results
+        claims_and_sources = _extract_claims_from_task_results(intermediate_results)
 
         # Generate response using LLM
         final_response = _generate_response_with_llm(intent, query, claims_and_sources, depth)
@@ -49,16 +50,22 @@ def response_formatter_node(state: AppState) -> AppState:
             f"Generated {intent} response using {len(claims_and_sources)} claims"
         )
 
+        # Calculate stats for UI
+        total_facts = len(claims_and_sources)
+        total_sources = sum(len(result.search_results) for result in intermediate_results.values() if result)
+        avg_confidence = sum(result.confidence_score for result in intermediate_results.values() if result) / len(intermediate_results) if intermediate_results else 0.0
+
         # Update final progress
         state = ResearchStateManager.update_research_progress(
             state,
             current_stage="finalizing",
-            facts_collected=research_bundle.total_facts_extracted,
-            confidence_score=research_bundle.overall_confidence
+            facts_collected=total_facts,
+            sources_processed=total_sources,
+            confidence_score=avg_confidence
         )
 
     # Mark research as complete
-    state = ResearchStateManager.mark_research_complete(state, research_bundle)
+    state = ResearchStateManager.mark_research_complete(state, None)
 
     return {
         **state,
@@ -66,15 +73,21 @@ def response_formatter_node(state: AppState) -> AppState:
         "processed": True
     }
 
-def _extract_claims_and_sources(research_bundle) -> List[Dict[str, Any]]:
-    """Extract simple claims and sources from research bundle."""
+def _extract_claims_from_task_results(intermediate_results) -> List[Dict[str, Any]]:
+    """Extract simple claims and sources from task results."""
     claims_and_sources = []
 
-    for category, facts in research_bundle.facts_by_category.items():
-        for fact in facts:
+    for task_id, result in intermediate_results.items():
+        if not result or not result.facts_found:
+            continue
+
+        # Convert task_id to readable category name
+        category = task_id.replace("_", " ").title()
+
+        for fact in result.facts_found:
             claim_data = {
-                "claim": fact.claim,
-                "sources": fact.sources if fact.sources else [],
+                "claim": fact["claim"],
+                "sources": [fact.get("source_url")] if fact.get("source_url") else [],
                 "category": category
             }
             claims_and_sources.append(claim_data)
@@ -121,40 +134,11 @@ Please generate a {intent} response using the research findings above."""
 
 def _get_system_prompt(intent: str, depth: str) -> str:
     """Get system prompt based on intent type."""
-
-    if intent == "fact":
-        return """You are a factual information assistant. Provide a direct, accurate answer to the user's question based on the research findings. Keep it concise and cite sources when possible."""
-
-    elif intent == "memo":
-        return f"""You are an investment analyst. Create a comprehensive investment memo with the following structure:
-
-# Investment Analysis
-
-## Executive Summary
-Brief overview of the investment opportunity
-
-## Financial Overview
-Key financial metrics, funding, valuation
-
-## Market Opportunity
-Market size, trends, growth potential
-
-## Competitive Landscape
-Key competitors and differentiation
-
-## Risk Assessment
-Main risks and challenges
-
-## Investment Recommendation
-Clear recommendation with reasoning
-
-Use the research findings to populate each section. Keep the analysis {"detailed" if depth == "comprehensive" else "concise"}."""
-
+    if intent == "memo":
+        return generate_prompt_for_memo(depth)
     elif intent == "profile":
-        return """You are a business analyst. Create a comprehensive company profile including background, business model, key metrics, recent developments, and strategic position. Structure the information clearly and cite sources."""
-
+        return generate_prompt_for_profile()
     elif intent == "compare":
-        return """You are a comparative analyst. Create a detailed comparison highlighting similarities, differences, strengths, and weaknesses of the entities mentioned. Structure your analysis with clear sections and objective assessments."""
-
+        return generate_prompt_for_compare()
     else:
-        return """You are a helpful research assistant. Provide a well-structured, informative response based on the research findings. Organize the information logically and cite sources when relevant."""
+        return generate_prompt_for_default()

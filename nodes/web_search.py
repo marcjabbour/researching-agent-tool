@@ -2,9 +2,9 @@ import os
 from typing import TypedDict, Dict, Any, List
 from tavily import TavilyClient
 from tools.intent_identifying.intents_data import INTENT
-from tools.web_searching.helpers import _prepare_search_query
-from tools.research_transparency.types import AppState
-from tools.research_transparency.state_manager import ResearchStateManager
+# No longer using _prepare_search_query
+from research_transparency.types import AppState
+from research_transparency.state_manager import ResearchStateManager
 
 def web_search_node(state: AppState) -> AppState:
     """

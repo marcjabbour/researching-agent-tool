@@ -3,8 +3,8 @@ import asyncio
 import time
 from typing import Dict, List, Any
 from tavily import TavilyClient
-from tools.research_transparency.types import AppState, ResearchTask, TaskResults
-from tools.web_searching.helpers import _get_search_params
+from research_transparency.types import AppState, ResearchTask, TaskResults
+# No longer using _get_search_params since we use fixed Tavily parameters
 
 async def _execute_tasks_parallel(tasks: List[ResearchTask], state: AppState) -> Dict[str, TaskResults]:
     """Execute multiple research tasks in parallel using asyncio."""

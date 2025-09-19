@@ -2,10 +2,10 @@ import os
 import asyncio
 import time
 from typing import Dict, Any, List
-from exa_py import Exa
-from tools.research_transparency.types import AppState, ResearchTask, TaskResults, SearchQuery
-from tools.research_transparency.state_manager import ResearchStateManager
-from tools.web_searching.helpers import _get_search_params
+# No longer using Exa
+from research_transparency.types import AppState, ResearchTask, TaskResults, SearchQuery
+from research_transparency.state_manager import ResearchStateManager
+# No longer using _get_search_params
 from tools.parallel_task_execution.helpers import _execute_tasks_parallel
 
 def parallel_task_execution_node(state: AppState) -> AppState:

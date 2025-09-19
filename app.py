@@ -1,13 +1,12 @@
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, END
-from tools.research_transparency.types import AppState
+from research_transparency.types import AppState
 from nodes.intent_detection import intent_detection_node
 from nodes.research_planning import research_planning_node
 from nodes.parallel_task_execution import parallel_task_execution_node
-from nodes.data_compilation import data_compilation_node
 from nodes.response_formatter import response_formatter_node
 from nodes.web_search import web_search_node
-from tools.research_transparency.state_manager import ResearchStateManager
+from research_transparency.state_manager import ResearchStateManager
 
 # Load environment variables
 load_dotenv()
@@ -16,9 +15,11 @@ def create_app() -> StateGraph:
     """
     Create and configure the Langgraph application with conditional routing based on intent.
 
-    New Flow:
+    Simplified Flow:
     - Intent Detection → (if fact) → Quick Web Search → Response Formatting
-    - Intent Detection → (if not fact) → Research Planning → Parallel Task Execution → Data Compilation → Response Formatting
+    - Intent Detection → (if not fact) → Research Planning → Parallel Task Execution → Response Formatting
+
+    The response formatter extracts claims from task results and uses LLM to generate final response.
     """
     # Create the state graph
     workflow = StateGraph(AppState)
@@ -28,7 +29,6 @@ def create_app() -> StateGraph:
     workflow.add_node("web_search", web_search_node)  # For quick fact queries
     workflow.add_node("research_planning", research_planning_node)
     workflow.add_node("parallel_task_execution", parallel_task_execution_node)
-    workflow.add_node("data_compilation", data_compilation_node)
     workflow.add_node("response_formatter", response_formatter_node)
 
     # Set the entry point
@@ -49,8 +49,7 @@ def create_app() -> StateGraph:
 
     # Research flow
     workflow.add_edge("research_planning", "parallel_task_execution")
-    workflow.add_edge("parallel_task_execution", "data_compilation")
-    workflow.add_edge("data_compilation", "response_formatter")
+    workflow.add_edge("parallel_task_execution", "response_formatter")
 
     # End
     workflow.add_edge("response_formatter", END)
@@ -169,8 +168,9 @@ if __name__ == "__main__":
     # fact_result = run_query(fact_query)
     # print(f"Fact Response: {fact_result['final_response']}")
 
-    print("\n=== TESTING MEMO QUERY ===")
-    memo_query = "Compare OpenAI and Perplexity AI"
-    memo_result = run_query(memo_query)
+    print("\n=== TESTING FACT QUERY ===")
+    fact_query = "Create a profile for Perplexity AI"
+    fact_result = run_query(fact_query)
+    print(f"Fact Response: {fact_result['final_response']}")
 
-    display_research_results(memo_result)
+    # display_research_results(fact_result)

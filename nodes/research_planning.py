@@ -3,8 +3,8 @@ import json
 from typing import Dict, Any, List
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-from tools.research_transparency.types import AppState, ResearchPlan, ResearchTask, SearchQuery
-from tools.research_transparency.state_manager import ResearchStateManager
+from research_transparency.types import AppState, ResearchPlan, ResearchTask, SearchQuery
+from research_transparency.state_manager import ResearchStateManager
 from tools.research_plan_generation.plan_generation import _generate_research_plan, _create_fallback_plan
 
 def research_planning_node(state: AppState) -> AppState:

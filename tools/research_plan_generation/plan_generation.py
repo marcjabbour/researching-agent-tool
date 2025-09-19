@@ -1,5 +1,5 @@
 from tools.research_plan_generation.data import _generate_research_plan_prompt
-from tools.research_transparency.types import ResearchPlan, ResearchTask, SearchQuery
+from research_transparency.types import ResearchPlan, ResearchTask, SearchQuery
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 import json

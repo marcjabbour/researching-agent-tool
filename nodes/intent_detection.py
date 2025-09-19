@@ -3,8 +3,8 @@ from typing import TypedDict, Dict, Any, List
 from langchain_openai import ChatOpenAI
 from tools.intent_identifying.intents import classify_intent_llm
 from tools.intent_identifying.intents_data import INTENT
-from tools.research_transparency.types import AppState
-from tools.research_transparency.state_manager import ResearchStateManager
+from research_transparency.types import AppState
+from research_transparency.state_manager import ResearchStateManager
 
 def intent_detection_node(state: AppState) -> AppState:
     """
