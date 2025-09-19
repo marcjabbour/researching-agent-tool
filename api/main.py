@@ -16,6 +16,7 @@ sys.path.append('..')
 from app import run_query
 from research_transparency.types import AppState
 from api.database import ResearchDatabase, ResearchSessionRecord
+from api.document_routes import router as document_router
 
 app = FastAPI(title="Research Agent API", version="1.0.0")
 
@@ -30,6 +31,9 @@ app.add_middleware(
 
 # Database instance
 db = ResearchDatabase()
+
+# Include document management routes
+app.include_router(document_router)
 
 # In-memory storage for active sessions
 research_sessions: Dict[str, Dict[str, Any]] = {}
