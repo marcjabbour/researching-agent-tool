@@ -54,8 +54,8 @@ export default function DashboardPage() {
 
       // Load sessions and stats in parallel
       const [sessionsResponse, statsResponse] = await Promise.all([
-        fetch('http://localhost:8001/api/dashboard/sessions?limit=50'),
-        fetch('http://localhost:8001/api/dashboard/stats')
+        fetch('http://localhost:8000/api/dashboard/sessions?limit=50'),
+        fetch('http://localhost:8000/api/dashboard/stats')
       ]);
 
       if (sessionsResponse.ok) {
@@ -81,7 +81,7 @@ export default function DashboardPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8001/api/dashboard/search?q=${encodeURIComponent(searchTerm)}&limit=50`);
+      const response = await fetch(`http://localhost:8000/api/dashboard/search?q=${encodeURIComponent(searchTerm)}&limit=50`);
       if (response.ok) {
         const data = await response.json();
         setSessions(data.sessions);
@@ -97,7 +97,7 @@ export default function DashboardPage() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8001/api/dashboard/session/${sessionId}`, {
+      const response = await fetch(`http://localhost:8000/api/dashboard/session/${sessionId}`, {
         method: 'DELETE'
       });
 

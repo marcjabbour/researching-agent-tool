@@ -10,7 +10,7 @@ export class WebSocketManager {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.ws = new WebSocket(`ws://localhost:8001/ws/research/${this.sessionId}`);
+        this.ws = new WebSocket(`ws://localhost:8000/ws/research/${this.sessionId}`);
 
         this.ws.onopen = () => {
           console.log('WebSocket connected');

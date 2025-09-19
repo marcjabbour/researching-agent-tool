@@ -51,7 +51,7 @@ export default function SessionDetailPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`http://localhost:8001/api/dashboard/session/${sessionId}`);
+      const response = await fetch(`http://localhost:8000/api/dashboard/session/${sessionId}`);
 
       if (!response.ok) {
         if (response.status === 404) {
