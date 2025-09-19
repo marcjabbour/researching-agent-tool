@@ -222,5 +222,4 @@ researching-agent-tool/
 │   │   ├── components/           # React components
 │   │   └── lib/                  # Utilities and types
 │   └── package.json              # Frontend dependencies
-└── uploads/                      # File upload directory
 ```

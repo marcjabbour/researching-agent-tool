@@ -18,6 +18,9 @@ export default function HomePage() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [wsManager, setWsManager] = useState<WebSocketManager | null>(null);
 
+  // Track if research is currently active (loading or has data but not completed)
+  const isResearchActive = isLoading || (researchData && !researchData.response);
+
   useEffect(() => {
     return () => {
       if (wsManager) {
@@ -70,6 +73,25 @@ export default function HomePage() {
     }
   };
 
+  const handleViewHistory = () => {
+    if (isResearchActive) {
+      const confirmed = confirm(
+        "This will interrupt the ongoing research. Are you sure you want to continue?"
+      );
+
+      if (confirmed) {
+        // Clean up WebSocket connection
+        if (wsManager) {
+          wsManager.disconnect();
+        }
+        window.location.href = '/dashboard';
+      }
+    } else {
+      // Navigate normally if no active research
+      window.location.href = '/dashboard';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -85,7 +107,7 @@ export default function HomePage() {
               </p>
             </div>
             <Button
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={handleViewHistory}
               variant="outline"
               size="sm"
               className="ml-4"
