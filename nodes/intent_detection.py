@@ -3,23 +3,23 @@ from typing import TypedDict, Dict, Any, List
 from langchain_openai import ChatOpenAI
 from tools.intent_identifying.intents import classify_intent_llm
 from tools.intent_identifying.intents_data import INTENT
-
-class AppState(TypedDict):
-    query: str
-    intent: INTENT
-    confidence: float
-    extras: Dict[str, Any]
-    processed: bool
-    search_query: str
-    search_results: List[Dict[str, Any]]
-    final_response: str
+from tools.research_transparency.types import AppState
+from tools.research_transparency.state_manager import ResearchStateManager
 
 def intent_detection_node(state: AppState) -> AppState:
     """
     Intent Detection Node - First node in the Langgraph workflow.
     Uses existing intent classification system to determine user intent.
+    Now includes research transparency initialization.
     """
     query = state["query"]
+
+    # Initialize research transparency
+    state = ResearchStateManager.initialize_research_state(state)
+    state = ResearchStateManager.log_reasoning_step(
+        state, "planning",
+        f"Analyzing query: '{query}'"
+    )
 
     # Initialize ChatOpenAI client
     llm = ChatOpenAI(
@@ -31,6 +31,12 @@ def intent_detection_node(state: AppState) -> AppState:
     try:
         intent, confidence, extras = classify_intent_llm(query, llm)
 
+        # Log intent detection results
+        state = ResearchStateManager.log_reasoning_step(
+            state, "planning",
+            f"Detected intent: '{intent}' with {confidence:.1%} confidence. Depth: {extras.get('depth', 'standard')}"
+        )
+
         return {
             **state,
             "intent": intent,
@@ -40,6 +46,11 @@ def intent_detection_node(state: AppState) -> AppState:
         }
     except Exception as e:
         # Fallback on error
+        state = ResearchStateManager.log_reasoning_step(
+            state, "planning",
+            f"Intent detection failed: {str(e)}. Defaulting to unknown intent."
+        )
+
         return {
             **state,
             "intent": "unknown",

@@ -1,3 +1,5 @@
+from typing import Dict, Any, List
+
 def _prepare_search_query(intent: str, query: str, entities: List[Dict[str, Any]]) -> str:
     """
     Prepare search query based on intent and extracted entities.
@@ -22,43 +24,53 @@ def _prepare_search_query(intent: str, query: str, entities: List[Dict[str, Any]
         # Unknown intent, use original query
         return query
 
-def _get_search_params(intent: str) -> Dict[str, Any]:
+def _get_search_params(intent: str, depth: str = "standard") -> Dict[str, Any]:
     """
-    Get search parameters optimized for each intent type.
+    Get search parameters optimized for each intent type and depth level.
+    Uses Exa-specific parameters for better research results.
     """
+    # Base Exa search parameters
     base_params = {
-        "include_answer": True,
-        "include_raw_content": False,
-        "include_images": False
+        "type": "neural",  # Use neural search for better semantic understanding
+        "use_autoprompt": True,  # Let Exa optimize the query
+        "text": True,  # Get full text content
     }
 
+    # Determine number of results based on depth and intent
+    result_counts = {
+        "quick": {"fact": 3, "profile": 4, "compare": 5, "memo": 6},
+        "standard": {"fact": 5, "profile": 8, "compare": 10, "memo": 12},
+        "comprehensive": {"fact": 8, "profile": 15, "compare": 20, "memo": 25}
+    }
+
+    num_results = result_counts.get(depth, result_counts["standard"]).get(intent, 8)
+
+    params = {
+        **base_params,
+        "num_results": num_results,
+    }
+
+    # Add intent-specific parameters
     if intent == "fact":
-        return {
-            **base_params,
-            "search_depth": "basic",
-            "max_results": 3
-        }
+        params.update({
+            "category": "company",  # Focus on authoritative sources
+            "start_published_date": "2020-01-01",  # Recent information
+        })
     elif intent == "profile":
-        return {
-            **base_params,
-            "search_depth": "advanced",
-            "max_results": 7
-        }
+        params.update({
+            "category": "company",
+            "include_domains": ["crunchbase.com", "bloomberg.com", "reuters.com", "forbes.com"],
+        })
     elif intent == "compare":
-        return {
-            **base_params,
-            "search_depth": "advanced",
-            "max_results": 8
-        }
+        params.update({
+            "category": "company",
+            "start_published_date": "2022-01-01",  # More recent for comparisons
+        })
     elif intent == "memo":
-        return {
-            **base_params,
-            "search_depth": "advanced",
-            "max_results": 10
-        }
-    else:
-        return {
-            **base_params,
-            "search_depth": "basic",
-            "max_results": 5
-        }
+        params.update({
+            "category": "company",
+            "include_domains": ["pitchbook.com", "crunchbase.com", "sec.gov", "bloomberg.com", "techcrunch.com"],
+            "start_published_date": "2021-01-01",
+        })
+
+    return params

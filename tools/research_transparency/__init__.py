@@ -1,0 +1,1 @@
+# Research transparency module for UI visibility
